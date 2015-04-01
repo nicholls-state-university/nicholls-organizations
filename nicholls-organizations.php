@@ -513,6 +513,7 @@ function nicholls_org_gf_create_org( $entry, $form ){
 	// Only privilged users, otherwise form sends email.
 	if ( !current_user_can( 'publish_posts' ) ) return;
 	
+	/*
 	echo '<br />--- Entry ----<br />';
 	print_r( $entry );
 
@@ -521,7 +522,7 @@ function nicholls_org_gf_create_org( $entry, $form ){
 	
 	// Return first argument.
 	return $entry;
-
+	*/
 	
 	$new_org = array(
 		'post_title' => sanitize_text_field( $entry[1] ),
@@ -543,24 +544,24 @@ function nicholls_org_gf_create_org( $entry, $form ){
 	//Now we add the meta
 	$prefix = '_nicholls_org_';
 
-	update_post_meta( $the_id, $prefix . 'nickname', sanitize_text_field( $entry[2] ) );
-	update_post_meta( $the_id, $prefix . 'advisor_name', sanitize_text_field( $entry[24.3] . ' ' . sanitize_text_field( $entry[24.6] ) );
-	update_post_meta( $the_id, $prefix . 'advisor_email', sanitize_text_field( $entry[20] ) );
-	update_post_meta( $the_id, $prefix . 'advisor_phone', sanitize_text_field( $entry[21] ) );
-	update_post_meta( $the_id, $prefix . 'advisor_office', sanitize_text_field( $entry[8] ) );
-	update_post_meta( $the_id, $prefix . 'co_advisor_name', sanitize_text_field( $entry[30.3] . ' ' . sanitize_text_field( $entry[30.6] ) );
-	update_post_meta( $the_id, $prefix . 'co_advisor_email', sanitize_text_field( $entry[12] ) );
-	update_post_meta( $the_id, $prefix . 'co_advisor_phone', sanitize_text_field( $entry[34] ) );
-	update_post_meta( $the_id, $prefix . 'org_president_name', sanitize_text_field( $entry[25.3] . ' ' . sanitize_text_field( $entry[25.6] ) );
-	update_post_meta( $the_id, $prefix . 'org_president_email', sanitize_text_field( $entry[22] ) );
-	update_post_meta( $the_id, $prefix . 'org_president_phone', sanitize_text_field( $entry[23] ) );
-	update_post_meta( $the_id, $prefix . 'org_vice_president_name', sanitize_text_field( $entry[26.3] . ' ' . sanitize_text_field( $entry[26.6] ) );
-	update_post_meta( $the_id, $prefix . 'org_vice_president_email', sanitize_text_field( $entry[31] );
-	update_post_meta( $the_id, $prefix . 'org_treasurer_name', sanitize_text_field( $entry[27.3] . ' ' . sanitize_text_field( $entry[27.6] ) );
-	update_post_meta( $the_id, $prefix . 'org_treasurer_email', sanitize_text_field( $entry[32] ) );
-	update_post_meta( $the_id, $prefix . 'org_secretary_name', sanitize_text_field( $entry[28.3] . ' ' . sanitize_text_field( $entry[28.6] ) );
-	update_post_meta( $the_id, $prefix . 'org_secretary_email', sanitize_text_field( $entry[33] ) );
-	update_post_meta( $the_id, $prefix . 'primary_contact_name', sanitize_text_field( $entry[28] ) );
+	update_post_meta( $the_id, $prefix . 'nickname', sanitize_text_field( $entry['2'] ) );
+	update_post_meta( $the_id, $prefix . 'advisor_name', sanitize_text_field( $entry['24.3'] . ' ' . $entry['24.6'] ) );
+	update_post_meta( $the_id, $prefix . 'advisor_email', sanitize_text_field( $entry['20'] ) );
+	update_post_meta( $the_id, $prefix . 'advisor_phone', sanitize_text_field( $entry['21'] ) );
+	update_post_meta( $the_id, $prefix . 'advisor_office', sanitize_text_field( $entry['8'] ) );
+	update_post_meta( $the_id, $prefix . 'co_advisor_name', sanitize_text_field( $entry['30.3'] . ' ' . $entry['30.6'] ) );
+	update_post_meta( $the_id, $prefix . 'co_advisor_email', sanitize_text_field( $entry['12'] ) );
+	update_post_meta( $the_id, $prefix . 'co_advisor_phone', sanitize_text_field( $entry['34'] ) );
+	update_post_meta( $the_id, $prefix . 'org_president_name', sanitize_text_field( $entry['25.3'] . ' ' . $entry['25.6'] ) );
+	update_post_meta( $the_id, $prefix . 'org_president_email', sanitize_text_field( $entry['22'] ) );
+	update_post_meta( $the_id, $prefix . 'org_president_phone', sanitize_text_field( $entry['23'] ) );
+	update_post_meta( $the_id, $prefix . 'org_vice_president_name', sanitize_text_field( $entry['26.3'] . ' ' . $entry['26.6'] ) );
+	update_post_meta( $the_id, $prefix . 'org_vice_president_email', sanitize_text_field( $entry['31'] ) );
+	update_post_meta( $the_id, $prefix . 'org_treasurer_name', sanitize_text_field( $entry['27.3'] . ' ' . $entry['27.6'] ) );
+	update_post_meta( $the_id, $prefix . 'org_treasurer_email', sanitize_text_field( $entry['32'] ) );
+	update_post_meta( $the_id, $prefix . 'org_secretary_name', sanitize_text_field( $entry['28.3'] . ' ' . $entry['28.6'] ) );
+	update_post_meta( $the_id, $prefix . 'org_secretary_email', sanitize_text_field( $entry['33'] ) );
+	update_post_meta( $the_id, $prefix . 'primary_contact_name', sanitize_text_field( $entry['28'] ) );
 
 	/* Handle images 
 	$thePhotos = json_decode($entry[5]);
