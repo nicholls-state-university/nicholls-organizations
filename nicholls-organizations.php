@@ -117,8 +117,8 @@ function nicholls_org_init() {
 	);
     
     // Setup custom image size  
-    add_image_size( 'nicholls-n-medium', 360, 360 );
-    add_image_size( 'nicholls-n-thumb', 180, 180 );
+    add_image_size( 'nicholls-org-medium', 360, 360 );
+    add_image_size( 'nicholls-org-thumb', 180, 180 );
     
 	// Needs moved to activation after testing
 	flush_rewrite_rules( false );
