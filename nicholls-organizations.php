@@ -406,10 +406,20 @@ function nicholls_org_metaboxes() {
 		'type' => 'text',
 	) );
 
+	$cmb_org_info->add_field( array(
+		'name'    => __( 'Organization Logo Image', 'nicholls_org' ),
+		'desc'    => __( 'Upload an image to represent the organization.', 'nicholls_org' ),
+		'id'      => $prefix . 'logo_image',
+		'type'    => 'file',
+		// Optionally hide the text input for the url:
+		'options' => array(
+			'url' => false,
+		),
+	) );
+
 	/**
 	 * Repeatable Field Group
-	 */
-	 
+	 */	 
 	 
 	$cmb_org_info_group = $cmb_org_info->add_field( array(
 		'id'          => $prefix . 'repeat_group',
@@ -448,6 +458,23 @@ function nicholls_org_metaboxes() {
 		// 'repeatable' => true, // Repeatable fields are supported w/in repeatable groups (for most types)
 	) );		 
 	 
+}
+
+add_action('save_post', 'nicholls_org_save_meta', 1, 2); // save the custom fields
+/**
+* Save the Metabox Data
+*/
+function nicholls_org_save_meta( $post_id, $post ) {
+
+	// Is the user allowed to edit the post or page?
+	if ( !current_user_can( 'edit_post', $post->ID ))
+		return $post->ID;
+	
+	// Featured Images
+	if ( isset( $_POST['_nicholls_org_logo_image_id'] ) && !empty( $_POST['_nicholls_org_logo_image_id'] ) ) 
+		add_post_meta( $post->ID, '_thumbnail_id', $_POST['_nicholls_org_logo_image_id'] ); 
+	if ( isset( $_POST['_nicholls_org_logo_image_id'] ) && empty( $_POST['_nicholls_org_logo_image_id'] ) ) 
+		delete_post_meta( $post->ID, '_thumbnail_id' ); 
 }
 
 add_action("gform_after_submission", "nicholls_org_gf_create_org", 10, 2);
@@ -513,15 +540,20 @@ function nicholls_org_gf_create_org( $entry, $form ){
 	// Only privilged users, otherwise form sends email.
 	if ( !current_user_can( 'publish_posts' ) ) return;
 	
+	/*
 	echo '<br />--- Entry ----<br />';
 	print_r( $entry );
 
 	echo '<br />--- Form ----<br />';
 	print_r( $form );	
+
+	echo '<br />--- Logo ----<br />';	
+	$org_logo = explode( '|', $entry['35'] );
+	print_r( $org_logo );
 	
 	// Return first argument.
 	return $entry;
-
+	*/
 	
 	$new_org = array(
 		'post_title' => sanitize_text_field( $entry[1] ),
@@ -542,25 +574,43 @@ function nicholls_org_gf_create_org( $entry, $form ){
 	
 	//Now we add the meta
 	$prefix = '_nicholls_org_';
+	
+	// Attach uploaded image
+	$org_logo = explode( '|', $entry['35'] );
+	reset( $org_logo );	
+	$org_logo_url = array_shift( $org_logo );
+	$org_logo_id = end( $org_logo );
+	wp_update_post( array(
+			'ID' => $org_logo_id,
+			'post_parent' => $the_id
+		)
+	);
 
-	update_post_meta( $the_id, $prefix . 'nickname', sanitize_text_field( $entry[2] ) );
-	update_post_meta( $the_id, $prefix . 'advisor_name', sanitize_text_field( $entry[24.3] . ' ' . sanitize_text_field( $entry[24.6] ) );
-	update_post_meta( $the_id, $prefix . 'advisor_email', sanitize_text_field( $entry[20] ) );
-	update_post_meta( $the_id, $prefix . 'advisor_phone', sanitize_text_field( $entry[21] ) );
-	update_post_meta( $the_id, $prefix . 'advisor_office', sanitize_text_field( $entry[8] ) );
-	update_post_meta( $the_id, $prefix . 'co_advisor_name', sanitize_text_field( $entry[30.3] . ' ' . sanitize_text_field( $entry[30.6] ) );
-	update_post_meta( $the_id, $prefix . 'co_advisor_email', sanitize_text_field( $entry[12] ) );
-	update_post_meta( $the_id, $prefix . 'co_advisor_phone', sanitize_text_field( $entry[34] ) );
-	update_post_meta( $the_id, $prefix . 'org_president_name', sanitize_text_field( $entry[25.3] . ' ' . sanitize_text_field( $entry[25.6] ) );
-	update_post_meta( $the_id, $prefix . 'org_president_email', sanitize_text_field( $entry[22] ) );
-	update_post_meta( $the_id, $prefix . 'org_president_phone', sanitize_text_field( $entry[23] ) );
-	update_post_meta( $the_id, $prefix . 'org_vice_president_name', sanitize_text_field( $entry[26.3] . ' ' . sanitize_text_field( $entry[26.6] ) );
-	update_post_meta( $the_id, $prefix . 'org_vice_president_email', sanitize_text_field( $entry[31] );
-	update_post_meta( $the_id, $prefix . 'org_treasurer_name', sanitize_text_field( $entry[27.3] . ' ' . sanitize_text_field( $entry[27.6] ) );
-	update_post_meta( $the_id, $prefix . 'org_treasurer_email', sanitize_text_field( $entry[32] ) );
-	update_post_meta( $the_id, $prefix . 'org_secretary_name', sanitize_text_field( $entry[28.3] . ' ' . sanitize_text_field( $entry[28.6] ) );
-	update_post_meta( $the_id, $prefix . 'org_secretary_email', sanitize_text_field( $entry[33] ) );
-	update_post_meta( $the_id, $prefix . 'primary_contact_name', sanitize_text_field( $entry[28] ) );
+	// Set CMB2 fields. Note the Attachement ID is stored in $prefix . 'logo_image_id', URL in $prefix . 'logo_image'
+	update_post_meta( $the_id, $prefix . 'logo_image_id', $org_logo_id );
+	update_post_meta( $the_id, $prefix . 'logo_image', $org_logo_url );
+	
+	// Set featured image
+	update_post_meta( $the_id, '_thumbnail_id', $org_logo_id);
+
+	update_post_meta( $the_id, $prefix . 'nickname', sanitize_text_field( $entry['2'] ) );
+	update_post_meta( $the_id, $prefix . 'advisor_name', sanitize_text_field( $entry['24.3'] . ' ' . $entry['24.6'] ) );
+	update_post_meta( $the_id, $prefix . 'advisor_email', sanitize_text_field( $entry['20'] ) );
+	update_post_meta( $the_id, $prefix . 'advisor_phone', sanitize_text_field( $entry['21'] ) );
+	update_post_meta( $the_id, $prefix . 'advisor_office', sanitize_text_field( $entry['8'] ) );
+	update_post_meta( $the_id, $prefix . 'co_advisor_name', sanitize_text_field( $entry['30.3'] . ' ' . $entry['30.6'] ) );
+	update_post_meta( $the_id, $prefix . 'co_advisor_email', sanitize_text_field( $entry['12'] ) );
+	update_post_meta( $the_id, $prefix . 'co_advisor_phone', sanitize_text_field( $entry['34'] ) );
+	update_post_meta( $the_id, $prefix . 'org_president_name', sanitize_text_field( $entry['25.3'] . ' ' . $entry['25.6'] ) );
+	update_post_meta( $the_id, $prefix . 'org_president_email', sanitize_text_field( $entry['22'] ) );
+	update_post_meta( $the_id, $prefix . 'org_president_phone', sanitize_text_field( $entry['23'] ) );
+	update_post_meta( $the_id, $prefix . 'org_vice_president_name', sanitize_text_field( $entry['26.3'] . ' ' . $entry['26.6'] ) );
+	update_post_meta( $the_id, $prefix . 'org_vice_president_email', sanitize_text_field( $entry['31'] ) );
+	update_post_meta( $the_id, $prefix . 'org_treasurer_name', sanitize_text_field( $entry['27.3'] . ' ' . $entry['27.6'] ) );
+	update_post_meta( $the_id, $prefix . 'org_treasurer_email', sanitize_text_field( $entry['32'] ) );
+	update_post_meta( $the_id, $prefix . 'org_secretary_name', sanitize_text_field( $entry['28.3'] . ' ' . $entry['28.6'] ) );
+	update_post_meta( $the_id, $prefix . 'org_secretary_email', sanitize_text_field( $entry['33'] ) );
+	update_post_meta( $the_id, $prefix . 'primary_contact_name', sanitize_text_field( $entry['28'] ) );
 
 	/* Handle images 
 	$thePhotos = json_decode($entry[5]);
