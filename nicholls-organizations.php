@@ -472,9 +472,9 @@ function nicholls_org_save_meta( $post_id, $post ) {
 	
 	// Featured Images
 	if ( isset( $_POST['_nicholls_org_logo_image_id'] ) && !empty( $_POST['_nicholls_org_logo_image_id'] ) ) 
-		add_post_meta( $post->ID, '_thumbnail_id', $_POST['_nicholls_org_logo_image_id'] ); 
+		add_post_meta( $post->ID, '_thumbnail_id', $_POST['_nicholls_org_logo_image_id'] );
 	if ( isset( $_POST['_nicholls_org_logo_image_id'] ) && empty( $_POST['_nicholls_org_logo_image_id'] ) ) 
-		delete_post_meta( $post->ID, '_thumbnail_id' ); 
+		delete_post_meta( $post->ID, '_thumbnail_id' );
 }
 
 add_action("gform_after_submission", "nicholls_org_gf_create_org", 10, 2);
@@ -586,6 +586,7 @@ function nicholls_org_gf_create_org( $entry, $form ){
 		)
 	);
 
+<<<<<<< HEAD
 	// Set CMB2 fields. Note the Attachement ID is stored in $prefix . 'logo_image_id', URL in $prefix . 'logo_image'
 	update_post_meta( $the_id, $prefix . 'logo_image_id', $org_logo_id );
 	update_post_meta( $the_id, $prefix . 'logo_image', $org_logo_url );
@@ -593,6 +594,8 @@ function nicholls_org_gf_create_org( $entry, $form ){
 	// Set featured image
 	update_post_meta( $the_id, '_thumbnail_id', $org_logo_id);
 
+=======
+>>>>>>> origin/master
 	update_post_meta( $the_id, $prefix . 'nickname', sanitize_text_field( $entry['2'] ) );
 	update_post_meta( $the_id, $prefix . 'advisor_name', sanitize_text_field( $entry['24.3'] . ' ' . $entry['24.6'] ) );
 	update_post_meta( $the_id, $prefix . 'advisor_email', sanitize_text_field( $entry['20'] ) );
