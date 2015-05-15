@@ -7,26 +7,68 @@
 * @package FNBX Theme
 * @subpackage Template
 */
+
 ?>
 <?php get_header() ?>
 
 <h1><?php post_type_archive_title(); ?></h1>
-		
-<?php while ( have_posts()) : the_post();  ?>
-<div class="nicholls-fs-employee clear-group">
 
-	<div class="nicholls-fs-photo">
-	<a href="<?php echo get_permalink(); ?>"><?php the_post_thumbnail('nicholls-org-thumb'); ?></a>
-	</div>
-	<div class="nicholls-fs-info">
-		<h2 class="nicholls-fs-name"><a href="<?php echo get_permalink(); ?>"><?php the_title(); ?></a></h2>
+<?php 
+	$paged = ( get_query_var('paged') ) ? get_query_var('paged') : 1;
+	$custom_args = array(
+		'post_type' => 'n-organizations',
+		'posts_per_page' => 12,
+		'paged' => $paged
+	);
+	$custom_query = new WP_Query( $custom_args ); 
+?>
 
+	<?php if ( $custom_query->have_posts() ) : ?>
 
-	</div>
+		<?php nicholls_org_custom_pagination( $custom_query->max_num_pages,"",$paged ); ?>
 
-</div>
+		<?php while ( $custom_query->have_posts() ) : $custom_query->the_post(); ?>
+	
+			<div class="nicholls-org-organization clear-group">
 
-<?php endwhile; ?>
+				<div class="nicholls-org-logo">
+				<a href="<?php echo get_permalink(); ?>"><?php the_post_thumbnail('nicholls-org-thumb'); ?></a>
+				</div>
+				<div class="nicholls-org-info">
+					<h2 class="nicholls-org-name"><a href="<?php echo get_permalink(); ?>"><?php the_title(); ?></a></h2>
+
+					<?php nicholls_org_display_meta_item( '_nicholls_org_nickname' ); ?>
+					<?php nicholls_org_display_meta_item( '_nicholls_org_advisor_email' ); ?>
+					<?php nicholls_org_display_meta_item( '_nicholls_org_advisor_phone' ); ?>
+					<?php nicholls_org_display_meta_item( '_nicholls_org_advisor_office' ); ?>
+					<?php nicholls_org_display_meta_item( '_nicholls_org_co_advisor_name' ); ?>
+					<?php nicholls_org_display_meta_item( '_nicholls_org_co_advisor_email' ); ?>
+					<?php nicholls_org_display_meta_item( '_nicholls_org_co_advisor_phone' ); ?>
+					<?php nicholls_org_display_meta_item( '_nicholls_org_org_president_name' ); ?>
+					<?php nicholls_org_display_meta_item( '_nicholls_org_org_president_email' ); ?>
+					<?php nicholls_org_display_meta_item( '_nicholls_org_org_president_phone' ); ?>
+					<?php nicholls_org_display_meta_item( '_nicholls_org_org_vice_president_name' ); ?>
+					<?php nicholls_org_display_meta_item( '_nicholls_org_org_vice_president_email' ); ?>
+					<?php nicholls_org_display_meta_item( '_nicholls_org_org_treasurer_name' ); ?>
+					<?php nicholls_org_display_meta_item( '_nicholls_org_org_treasurer_email' ); ?>
+					<?php nicholls_org_display_meta_item( '_nicholls_org_org_secretary_name' ); ?>
+					<?php nicholls_org_display_meta_item( '_nicholls_org_org_secretary_email' ); ?>
+
+				</div>
+
+			</div>
+
+		<?php endwhile; ?>
+
+		<?php nicholls_org_custom_pagination( $custom_query->max_num_pages,"",$paged ); ?>
+
+		<?php wp_reset_postdata(); ?>
+  
+	<?php else: ?>
+	
+		<p><?php _e( 'Sorry, no posts matched your criteria.' ); ?></p>
+    
+	<?php endif; ?>
 
 		<?php do_action( 'fnbx_template_archive_end', 'template_archive' ) ?>
 		<!-- END: template_archive -->

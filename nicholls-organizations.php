@@ -60,7 +60,7 @@ function nicholls_org_init() {
 			'slug' => 'organizations',
 		),  
         'supports' => array('title', 'editor', 'thumbnail', 'revisions'),
-        'register_meta_box_cb' => 'nicholls_fs_add_metaboxes'
+        'register_meta_box_cb' => 'nicholls_org_add_metaboxes'
        );  
     register_post_type( 'n-organizations' , $args );
     
@@ -123,7 +123,95 @@ function nicholls_org_init() {
 	// Needs moved to activation after testing
 	flush_rewrite_rules( false );
     
-}  
+}
+
+add_action( 'wp_enqueue_scripts', 'nicholls_org_js_enqueue' );
+/**
+* Email contact form - JavaScript
+*
+*/
+function nicholls_org_js_enqueue() {
+
+	if ( 'n-faculty-staff' != get_post_type() ) return;
+	
+	//Enqueue Javascript & jQuery if not already loaded
+	wp_enqueue_script('jquery');
+	wp_enqueue_script('nicholls-org-js', plugins_url( 'js/nicholls-org.js' , __FILE__ ), array('jquery'));
+	wp_enqueue_script('magnific-popup-js', plugins_url( 'Magnific-Popup-master/dist/jquery.magnific-popup.min.js' , __FILE__ ), array('jquery'));
+	
+	// Enqueue CSS
+	wp_enqueue_style( 'magnific-popup-css', plugins_url( 'Magnific-Popup-master/dist/magnific-popup.css' , __FILE__ ) );
+
+	$localize = array(
+		'ajaxurl' => admin_url( 'admin-ajax.php' )
+	);
+	wp_localize_script('nicholls-org-js', 'nicholls_org_js_obj', $localize);
+}
+
+add_action( 'wp_ajax_nicholls-org-form-email', 'nicholls_org_js_enqueue' );
+add_action( 'wp_ajax_nopriv_nicholls-org-form-email', 'nicholls_org_js_enqueue' );
+/**
+* Email contact form - Ajax actions
+*
+*/
+function nicholls_org_ajax_simple_contact_form() {
+
+	if ( isset( $_POST['nicholls_org_email_form_nonce'] ) && wp_verify_nonce( $_POST['nicholls_org_email_form_nonce'], 'nicholls_org_email_form' ) ) {
+
+		$name = sanitize_text_field($_POST['nicholls-org-form-email-name']);
+		$email = sanitize_email($_POST['nicholls-org-form-email-email']);
+		$message = stripslashes( wp_filter_kses($_POST['nicholls-org-form-email-message']) );
+		$form_url = esc_url( $_POST['nicholls-org-form-url'] );
+		$subject = 'Nicholls Web Email - Message from ' . $name; 
+		
+		$to = sanitize_email($_POST['nicholls-org-form-email-addr']);
+
+		$headers[] = 'From: ' . $name . ' <' . $email . '>' . "\r\n";
+		$headers[] = 'Reply-To: ' . $name . ' <' . $email . '>' . "\r\n";
+		$headers[] = 'Content-type: text/html' . "\r\n"; //Enables HTML ContentType. Remove it for Plain Text Messages
+		
+		$message = '<br/>' . $message . '<br/><br/><hr/>This messange sent using a form found at: ' . $form_url . '<br/>Please contact nichweb@nicholls.edu for support.';
+		
+		add_filter('wp_mail_content_type',create_function('', 'return "text/html";'));
+		$check = wp_mail( $to, $subject, $message, $headers );
+		
+		wp_send_json_error( $check );
+
+	}
+
+	die(); // Important
+}
+
+/**
+* Email contact form
+*
+*/
+function nicholls_org_email_form() { ?>
+	<div id="nicholls-org-form" class="nicholls-org-form-">
+		<form id="nicholls-org-form-email" class="white-popup-block mfp-hide">
+			<div id="nicholls-org-form-message-top" class="nicholls-org-form-message-top-"></div>
+			<div id="nicholls-org-form-name" class="nicholls-org-form-name-">
+				Your Name <br/>
+				<input id="nicholls-org-form-email-name" class="text" type="text" name="nicholls-org-form-email-name"/>
+			</div>
+			<div id="nicholls-org-form-email" class="nicholls-org-form-email-">
+				Your Email <br/>
+				<input id="nicholls-org-form-email-email" class="text" type="text" name="nicholls-org-form-email-email"/>
+			</div>
+			<div id="nicholls-org-form-message" class="nicholls-org-form-message-">
+				Your Message <br/>
+				<textarea id="nicholls-org-form-email-message" class="textarea" name="nicholls-org-form-email-message"></textarea>
+			</div>
+			<input name="action" type="hidden" value="nicholls-org-form-email" />
+			<input name="nicholls-org-form-email-addr" type="hidden" value="" />
+			<input name="nicholls-org-form-url" type="hidden" value="<?php the_permalink(); ?>" />
+			<?php wp_nonce_field( 'nicholls_org_email_form', 'nicholls_org_email_form_nonce' ); ?>
+			<input id="scfs" class="button" type="submit" name="scfs" value="Send Message"/>
+			<img class="nicholls-org-form-email-ajax-image" src="<?php echo plugins_url( 'images/11kguf4.gif', __FILE__ ); ?>" alt="Sending Message">
+			<div class="nicholls-org-form-email-message"><p></p></div>
+		<form>
+	</div>
+<?php } 
 
 add_filter('template_redirect', 'nicholls_org_template_smart');
 /*
@@ -646,4 +734,195 @@ function nicholls_org_gf_create_org( $entry, $form ){
 	update_post_meta($theId, $thePrefix.'photos', $finalPhotos);
 	*/
 	
+}
+
+/**
+* Custom pagination
+*/
+function nicholls_org_custom_pagination($numpages = '', $pagerange = '', $paged='') {
+
+  if (empty($pagerange)) {
+    $pagerange = 2;
+  }
+
+  /**
+   * This first part of our function is a fallback
+   * for custom pagination inside a regular loop that
+   * uses the global $paged and global $wp_query variables.
+   * 
+   * It's good because we can now override default pagination
+   * in our theme, and use this function in default quries
+   * and custom queries.
+   */
+  global $paged;
+  if (empty($paged)) {
+    $paged = 1;
+  }
+  if ($numpages == '') {
+    global $wp_query;
+    $numpages = $wp_query->max_num_pages;
+    if(!$numpages) {
+        $numpages = 1;
+    }
+  }
+
+  /** 
+   * We construct the pagination arguments to enter into our paginate_links
+   * function. 
+   */
+  $pagination_args = array(
+    'base'            => get_pagenum_link(1) . '%_%',
+    'format'          => 'page/%#%',
+    'total'           => $numpages,
+    'current'         => $paged,
+    'show_all'        => False,
+    'end_size'        => 1,
+    'mid_size'        => $pagerange,
+    'prev_next'       => True,
+    'prev_text'       => __('&laquo;'),
+    'next_text'       => __('&raquo;'),
+    'type'            => 'plain',
+    'add_args'        => false,
+    'add_fragment'    => ''
+  );
+
+  $paginate_links = paginate_links($pagination_args);
+
+  if ($paginate_links) {
+    echo "<nav class='custom-pagination'>";
+      echo "<span class='page-numbers page-num'>Page " . $paged . " of " . $numpages . "</span> ";
+      echo $paginate_links;
+    echo "</nav>";
+  }
+
+}
+
+/**
+* Display custom meta based on meta key
+*/
+function nicholls_org_display_meta_item( $meta_item = '', $the_post_id = 0, $return = false ) {
+
+	if ( $the_post_id == 0 || empty( $the_post_id ) ) {
+		$the_post_id = get_the_ID();
+	}
+	
+	$meta_item_data = get_post_meta( $the_post_id, $meta_item, true );
+	
+	if ( empty( $meta_item_data ) ) return;	
+	
+	$meta_items = array(
+		'_nicholls_org_nickname' => array(
+			'name' => 'Nickname',
+			'class' => 'nicholls-org-nickname'
+		),
+		'_nicholls_org_advisor_name' => array(
+			'name' => 'Advisor Name',
+			'class' => 'nicholls-org-advisor-name'
+		),		
+		'_nicholls_org_advisor_email' => array(
+			'name' => 'Advisor Email',
+			'class' => 'nicholls-org-advisor-email'
+		),	
+		'_nicholls_org_advisor_phone' => array(
+			'name' => 'Advisor Phone Number',
+			'class' => 'nicholls-org-advisor-phone'
+		),	
+		'_nicholls_org_advisor_office' => array(
+			'name' => 'Advisor Office Location',
+			'class' => 'nicholls-org-advisor-office'
+		),	
+		'_nicholls_org_co_advisor_name' => array(
+			'name' => 'Co-Advisor Name',
+			'class' => 'nicholls-org-co-advisor-name'
+		),
+		'_nicholls_org_co_advisor_email' => array(
+			'name' => 'Co-Advisor Email',
+			'class' => 'nicholls-org-co-advisor-email'
+		),
+		'_nicholls_org_co_advisor_phone' => array(
+			'name' => 'Co-Advisor Phone',
+			'class' => 'nicholls-org-co-advisor-phone'
+		),
+		'_nicholls_org_org_president_name' => array(
+			'name' => 'Organization President Name',
+			'class' => 'nicholls-org-org-president-name'
+		),
+		'_nicholls_org_org_president_email' => array(
+			'name' => 'Organization President Email',
+			'class' => 'nicholls-org-org-president-email'
+		),
+		'_nicholls_org_org_president_phone' => array(
+			'name' => 'Organization President Phone',
+			'class' => 'nicholls-org-org-president-phone'
+		),						
+		'_nicholls_org_org_vice_president_name' => array(
+			'name' => 'Organization Vice President Name',
+			'class' => 'nicholls-org-org-vice-president-name'
+		),
+		'_nicholls_org_org_vice_president_email' => array(
+			'name' => 'Organization Vice President Email',
+			'class' => 'nicholls-org-org-vice-president-email'
+		),
+		'_nicholls_org_org_treasurer_name' => array(
+			'name' => 'Organization Treasurer Name',
+			'class' => 'nicholls-org-org-treasurer-name'
+		),
+		'_nicholls_org_org_treasurer_email' => array(
+			'name' => 'Organization Treasurer Email',
+			'class' => 'nicholls-org-org-treasurer-email'
+		),
+		'_nicholls_org_org_secretary_name' => array(
+			'name' => 'Organization Secretary Name',
+			'class' => 'nicholls-org-org-secretary-name'
+		),		
+		'_nicholls_org_org_secretary_email' => array(
+			'name' => 'Organization Secretary Email',
+			'class' => 'nicholls-org-org-secretary-email'
+		)
+	);
+	
+	if ( strstr( $meta_item, '_email' ) ) {
+		
+		$e_email = explode( '@', $meta_item_data );
+
+		$display .= '<div class="' . $meta_items[$meta_item]['class'] . '"><strong>' . $meta_items[$meta_item]['name'] . ':</strong> ';
+		
+		$display .= '<script type="text/javascript">' . "\n";
+		$display .= '//<![CDATA[' . "\n";
+		$display .= 'var n_u = "' . $e_email[0] . '";' . "\n";
+		$display .= 'var n_dd = "' . $e_email[1] . '";' . "\n";
+		$display .= 'var n_dot = "' . $employee_name . '";' . "\n";
+		$display .= '//]]>' . "\n";
+		$display .= '</script>' . "\n";
+				
+		$display .= '<script type="text/javascript">' . "\n";
+		$display .= '//<![CDATA[' . "\n";
+		$display .= '<!--' . "\n";
+		$display .= ' var u = "";' . "\n";
+		$display .= 'var d = "";' . "\n";
+		$display .= 'var cmd = "m"+""+"a";' . "\n";
+		$display .= 'var to = "t";' . "\n";
+			   
+		$display .= 'cmd = cmd + ""+""+"i";' . "\n";
+		$display .= 'to = to+"o:";' . "\n";
+		$display .= 'cmd = cmd +"l"+to;' . "\n";
+		$display .= 'loc = cmd+n_u;' . "\n";
+		$display .= 'loc = loc + "%40";' . "\n";
+		$display .= 'loc = loc + n_dd;' . "\n";
+		$display .= 'document.write("<a class=\"nicholls-org-modal-email\" href=\""+loc+"\">"+n_u+"&#64;"+n_dd+"<\/a>");' . "\n";
+
+		$display .= '//-->' . "\n";
+		$display .= '//]]>' . "\n";
+		$display .= '</script>' . "\n";
+		
+		$display .= '</div>';		
+		
+	} else
+		$display = '<div class="' . $meta_items[$meta_item]['class'] . '"><strong>' . $meta_items[$meta_item]['name'] . ':</strong> ' . $meta_item_data . '</div>';
+	
+	if ( !$return )
+		echo $display;
+	else
+		return $display;
+
 }
