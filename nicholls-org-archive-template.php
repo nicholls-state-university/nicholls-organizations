@@ -70,6 +70,8 @@
     
 	<?php endif; ?>
 
+	<?php nicholls_org_email_form(); ?>
+
 		<?php do_action( 'fnbx_template_archive_end', 'template_archive' ) ?>
 		<!-- END: template_archive -->
 

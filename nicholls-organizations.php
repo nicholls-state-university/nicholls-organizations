@@ -132,7 +132,7 @@ add_action( 'wp_enqueue_scripts', 'nicholls_org_js_enqueue' );
 */
 function nicholls_org_js_enqueue() {
 
-	if ( 'n-faculty-staff' != get_post_type() ) return;
+	if ( 'n-organizations' != get_post_type() ) return;
 	
 	//Enqueue Javascript & jQuery if not already loaded
 	wp_enqueue_script('jquery');
@@ -180,6 +180,38 @@ function nicholls_org_ajax_simple_contact_form() {
 	}
 
 	die(); // Important
+}
+
+add_action( 'phpmailer_init', 'nicholls_org_configure_smtp', 999 );
+/**
+* Configure SMTP & Advanced PHPMail options
+*/
+function nicholls_org_configure_smtp( $phpmailer ){
+
+    $phpmailer->From = 'nichweb@nicholls.edu';
+    $phpmailer->FromName='Nicholls Webmanager';
+	$phpmailer->Sender = 'nichweb@nicholls.edu';
+
+	/*
+	* Expception handling for PHPMailer to catch errors for ajax requests.
+	* see: https://gist.github.com/franz-josef-kaiser/5840282
+	*/
+	/*
+	$error = null;
+	try {
+		$sent = $phpmailer->Send();
+		! $sent AND $error = new WP_Error( 'phpmailerError', $sent->ErrorInfo );
+	}
+	catch ( phpmailerException $e ) {
+		$error = new WP_Error( 'phpmailerException', $e->errorMessage() );
+	}
+	catch ( Exception $e ) {
+		$error = new WP_Error( 'defaultException', $e->getMessage() );
+	}
+ 
+	if ( is_wp_error( $error ) )
+		return printf( "%s: %s", $error->get_error_code(), $error->get_error_message() );
+	*/
 }
 
 /**
