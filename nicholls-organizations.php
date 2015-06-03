@@ -123,6 +123,11 @@ function nicholls_org_init() {
 	// Needs moved to activation after testing
 	flush_rewrite_rules( false );
     
+	if ( is_user_logged_in() ) 
+		add_action( 'wp_ajax_nicholls-org-form-email', 'nicholls_org_ajax_simple_contact_form' );
+	else
+		add_action( 'wp_ajax_nopriv_nicholls-org-form-email', 'nicholls_org_ajax_simple_contact_form' );
+    
 }
 
 add_action( 'wp_enqueue_scripts', 'nicholls_org_js_enqueue' );
@@ -148,8 +153,6 @@ function nicholls_org_js_enqueue() {
 	wp_localize_script('nicholls-org-js', 'nicholls_org_js_obj', $localize);
 }
 
-add_action( 'wp_ajax_nicholls-org-form-email', 'nicholls_org_js_enqueue' );
-add_action( 'wp_ajax_nopriv_nicholls-org-form-email', 'nicholls_org_js_enqueue' );
 /**
 * Email contact form - Ajax actions
 *
@@ -196,6 +199,7 @@ function nicholls_org_configure_smtp( $phpmailer ){
 	* Expception handling for PHPMailer to catch errors for ajax requests.
 	* see: https://gist.github.com/franz-josef-kaiser/5840282
 	*/
+	
 	/*
 	$error = null;
 	try {
@@ -212,6 +216,7 @@ function nicholls_org_configure_smtp( $phpmailer ){
 	if ( is_wp_error( $error ) )
 		return printf( "%s: %s", $error->get_error_code(), $error->get_error_message() );
 	*/
+	
 }
 
 /**
@@ -913,7 +918,13 @@ function nicholls_org_display_meta_item( $meta_item = '', $the_post_id = 0, $ret
 		)
 	);
 	
-	if ( strstr( $meta_item, '_email' ) ) {
+	// Assign email addresses that can use the email form system.
+	$email_meta_items = array(
+		'_nicholls_org_org_president_email',
+		'_nicholls_org_advisor_email'
+	);
+	
+	if ( in_array( $meta_item, $email_meta_items ) ) {
 		
 		$e_email = explode( '@', $meta_item_data );
 
