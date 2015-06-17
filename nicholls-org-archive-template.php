@@ -15,19 +15,21 @@
 
 <?php 
 	$paged = ( get_query_var('paged') ) ? get_query_var('paged') : 1;
+
 	$custom_args = array(
 		'post_type' => 'n-organizations',
-		'posts_per_page' => 12,
 		'paged' => $paged
 	);
 	$custom_query = new WP_Query( $custom_args ); 
 ?>
 
-	<?php if ( $custom_query->have_posts() ) : ?>
+<?php nicholls_org_tax_display_types(); ?>
 
-		<?php nicholls_org_custom_pagination( $custom_query->max_num_pages,"",$paged ); ?>
+	<?php if ( have_posts() ) : ?>
 
-		<?php while ( $custom_query->have_posts() ) : $custom_query->the_post(); ?>
+		<?php echo paginate_links( $args ); ?>
+
+		<?php while ( have_posts() ) : the_post(); ?>
 	
 			<div class="nicholls-org-organization clear-group">
 
@@ -59,8 +61,8 @@
 			</div>
 
 		<?php endwhile; ?>
-
-		<?php nicholls_org_custom_pagination( $custom_query->max_num_pages,"",$paged ); ?>
+				
+		<?php echo paginate_links( $args ); ?>
 
 		<?php wp_reset_postdata(); ?>
   

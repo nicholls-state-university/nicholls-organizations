@@ -50,6 +50,7 @@ function nicholls_org_init() {
 		),
 		'taxonomies'    => array(
 			'n-organization-tags',
+			'n-organization-type'
 		),		
         'public' => true, 
         'show_ui' => true,  
@@ -250,7 +251,7 @@ function nicholls_org_email_form() { ?>
 	</div>
 <?php } 
 
-add_filter('template_redirect', 'nicholls_org_template_smart');
+//add_filter('template_redirect', 'nicholls_org_template_smart');
 /*
 * Filter the single entry and archive templates with our custom function
 */
@@ -289,6 +290,37 @@ function nicholls_org_template_smart(){
     }
 
 }
+
+add_filter( 'single_template', 'nicholls_org_template_single' ) ;
+/*
+* Filter the archive templates with our custom function
+*/
+function nicholls_org_template_single( $single_template ) {
+	global $post, $query;
+	
+    $single_template_name = 'nicholls-org-template.php';
+    
+     if ( get_post_type() == 'n-organizations' && is_single() ) {
+          $single_template = dirname( __FILE__ ) . '/' . $single_template_name;
+     }
+     return $single_template;
+}
+
+add_filter( 'archive_template', 'nicholls_org_template_archive' ) ;
+/*
+* Filter the archive templates with our custom function
+*/
+function nicholls_org_template_archive( $archive_template ) {
+	global $post, $query;
+	
+	$archive_template_name = 'nicholls-org-archive-template.php';
+    
+     if ( get_post_type() == 'n-organizations' && is_archive() ) {
+          $archive_template = dirname( __FILE__ ) . '/' . $archive_template_name;
+     }
+     return $archive_template;
+}
+
 
 /**
  * Prerender Organization dropdown list in Gravity Forms.
@@ -773,65 +805,69 @@ function nicholls_org_gf_create_org( $entry, $form ){
 	
 }
 
+add_filter('pre_get_posts', 'nicholls_org_pre_get_posts');
 /**
-* Custom pagination
+ * Limit, change number of posts in archive pages
+ */
+function nicholls_org_pre_get_posts($query){
+
+	return $query;
+	// Get and set the paging variable
+	$paged = ( get_query_var('paged') ) ? get_query_var('paged') : 1;
+	
+	$postsperpage = get_option('posts_per_page');
+
+	if (  is_archive() && get_query_var('n-organization-type') ) {
+	
+		$query->set( 'paged', $paged );
+		$query->set( 'orderby', 'title' );
+		$query->set( 'order', 'ASC' );
+		$query->set( 'posts_per_page', $postsperpage );
+
+		$requested_area = get_query_var('n-organization-type');
+		if ( !empty( $requested_area ) ) {
+
+			$tax_query = array(
+				array(
+					'taxonomy' => 'n-organization-type',
+					'field' => 'slug',
+					'terms' => array( $requested_area ),
+					'operator'=>'IN'
+				)
+			);
+			$query->set('tax_query',$tax_query);
+		}
+	
+	}
+
+print_r( $query );
+
+	return $query;
+}
+
+/**
+* Display Organization types
 */
-function nicholls_org_custom_pagination($numpages = '', $pagerange = '', $paged='') {
+function nicholls_org_tax_display_types() {		
 
-  if (empty($pagerange)) {
-    $pagerange = 2;
-  }
+	global $nicholls_fs_core;
+	
+	echo '<div class="nicholls-fs-departments clear-group">';
 
-  /**
-   * This first part of our function is a fallback
-   * for custom pagination inside a regular loop that
-   * uses the global $paged and global $wp_query variables.
-   * 
-   * It's good because we can now override default pagination
-   * in our theme, and use this function in default quries
-   * and custom queries.
-   */
-  global $paged;
-  if (empty($paged)) {
-    $paged = 1;
-  }
-  if ($numpages == '') {
-    global $wp_query;
-    $numpages = $wp_query->max_num_pages;
-    if(!$numpages) {
-        $numpages = 1;
-    }
-  }
+	$taxonomy = 'n-organization-type';
+	$terms = get_terms( $taxonomy, '' );
 
-  /** 
-   * We construct the pagination arguments to enter into our paginate_links
-   * function. 
-   */
-  $pagination_args = array(
-    'base'            => get_pagenum_link(1) . '%_%',
-    'format'          => 'page/%#%',
-    'total'           => $numpages,
-    'current'         => $paged,
-    'show_all'        => False,
-    'end_size'        => 1,
-    'mid_size'        => $pagerange,
-    'prev_next'       => True,
-    'prev_text'       => __('&laquo;'),
-    'next_text'       => __('&raquo;'),
-    'type'            => 'plain',
-    'add_args'        => false,
-    'add_fragment'    => ''
-  );
+	if ($terms) {
+		echo '<strong>Departments or Areas</strong><br />';
+		echo '<ul class="nicholls-fs-department-links">';
+		echo '<li class="nicholls-fs-department-link">' . '<a href="' . esc_attr( get_site_url() . '/' . $nicholls_fs_core->default_url ) . '" title="' . __( "View all" ) . '" ' . '>' . __( "View all" ) . '</a></li>';
+		foreach($terms as $term) {
+			echo '<li class="nicholls-fs-department-link">' . '<a href="' . esc_attr( get_term_link($term, $taxonomy) ) . '" title="' . sprintf( __( "View all posts in %s" ), $term->name ) . '" ' . '>' . $term->name.'</a></li>';
+		}
+		echo '</ul>';
+	}
 
-  $paginate_links = paginate_links($pagination_args);
-
-  if ($paginate_links) {
-    echo "<nav class='custom-pagination'>";
-      echo "<span class='page-numbers page-num'>Page " . $paged . " of " . $numpages . "</span> ";
-      echo $paginate_links;
-    echo "</nav>";
-  }
-
+	echo '</div>';
 }
 
 /**
