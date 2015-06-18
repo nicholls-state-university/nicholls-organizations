@@ -810,8 +810,17 @@ add_filter('pre_get_posts', 'nicholls_org_pre_get_posts');
  * Limit, change number of posts in archive pages
  */
 function nicholls_org_pre_get_posts($query){
+        
+    if ( get_query_var('post_type') == 'n-organizations' || get_query_var('n-organization-type', 0) ) {
+		if ( !is_single() ) {
+			$query->set( 'orderby', 'title' );
+			$query->set( 'order', 'ASC' );	
+		}
+    }
 
 	return $query;
+
+/* This is OLD but interesting
 	// Get and set the paging variable
 	$paged = ( get_query_var('paged') ) ? get_query_var('paged') : 1;
 	
@@ -840,9 +849,9 @@ function nicholls_org_pre_get_posts($query){
 	
 	}
 
-print_r( $query );
-
 	return $query;
+*/
+
 }
 
 /**
