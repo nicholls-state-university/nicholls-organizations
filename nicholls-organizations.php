@@ -849,20 +849,18 @@ print_r( $query );
 * Display Organization types
 */
 function nicholls_org_tax_display_types() {		
-
-	global $nicholls_fs_core;
 	
-	echo '<div class="nicholls-fs-departments clear-group">';
+	echo '<div class="nicholls-org-types clear-group">';
 
 	$taxonomy = 'n-organization-type';
 	$terms = get_terms( $taxonomy, '' );
 
 	if ($terms) {
-		echo '<strong>Departments or Areas</strong><br />';
-		echo '<ul class="nicholls-fs-department-links">';
-		echo '<li class="nicholls-fs-department-link">' . '<a href="' . esc_attr( get_site_url() . '/' . $nicholls_fs_core->default_url ) . '" title="' . __( "View all" ) . '" ' . '>' . __( "View all" ) . '</a></li>';
+		echo '<strong>Organziation Types</strong><br />';
+		echo '<ul class="nicholls-org-type-links">';
+		echo '<li class="nicholls-org-type-link">' . '<a href="' . esc_attr( get_post_type_archive_link( 'n-organizations' ) ) . '" title="' . __( "View all" ) . '" ' . '>' . __( "View all" ) . '</a></li>';
 		foreach($terms as $term) {
-			echo '<li class="nicholls-fs-department-link">' . '<a href="' . esc_attr( get_term_link($term, $taxonomy) ) . '" title="' . sprintf( __( "View all posts in %s" ), $term->name ) . '" ' . '>' . $term->name.'</a></li>';
+			echo '<li class="nicholls-org-type-link">' . '<a href="' . esc_attr( get_term_link($term, $taxonomy) ) . '" title="' . sprintf( __( "View all posts in %s" ), $term->name ) . '" ' . '>' . $term->name.'</a></li>';
 		}
 		echo '</ul>';
 	}
