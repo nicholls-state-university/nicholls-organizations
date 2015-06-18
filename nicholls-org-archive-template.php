@@ -39,23 +39,24 @@
 				<div class="nicholls-org-info">
 					<h2 class="nicholls-org-name"><a href="<?php echo get_permalink(); ?>"><?php the_title(); ?></a></h2>
 
+					<h4>Organization Information</h4>
+
 					<?php nicholls_org_display_meta_item( '_nicholls_org_nickname' ); ?>
+
+					<?php nicholls_org_display_meta_item( '_nicholls_org_org_president_name' ); ?>
+					<?php nicholls_org_display_meta_item( '_nicholls_org_org_president_email' ); ?>
+					<?php nicholls_org_display_meta_item( '_nicholls_org_org_vice_president_name' ); ?>
+					<?php nicholls_org_display_meta_item( '_nicholls_org_org_treasurer_name' ); ?>
+					<?php nicholls_org_display_meta_item( '_nicholls_org_org_secretary_name' ); ?>
+
+					<h4>Advisor Information</h4>
 					<?php nicholls_org_display_meta_item( '_nicholls_org_advisor_email' ); ?>
 					<?php nicholls_org_display_meta_item( '_nicholls_org_advisor_phone' ); ?>
 					<?php nicholls_org_display_meta_item( '_nicholls_org_advisor_office' ); ?>
 					<?php nicholls_org_display_meta_item( '_nicholls_org_co_advisor_name' ); ?>
 					<?php nicholls_org_display_meta_item( '_nicholls_org_co_advisor_email' ); ?>
 					<?php nicholls_org_display_meta_item( '_nicholls_org_co_advisor_phone' ); ?>
-					<?php nicholls_org_display_meta_item( '_nicholls_org_org_president_name' ); ?>
-					<?php nicholls_org_display_meta_item( '_nicholls_org_org_president_email' ); ?>
-					<?php nicholls_org_display_meta_item( '_nicholls_org_org_president_phone' ); ?>
-					<?php nicholls_org_display_meta_item( '_nicholls_org_org_vice_president_name' ); ?>
-					<?php nicholls_org_display_meta_item( '_nicholls_org_org_vice_president_email' ); ?>
-					<?php nicholls_org_display_meta_item( '_nicholls_org_org_treasurer_name' ); ?>
-					<?php nicholls_org_display_meta_item( '_nicholls_org_org_treasurer_email' ); ?>
-					<?php nicholls_org_display_meta_item( '_nicholls_org_org_secretary_name' ); ?>
-					<?php nicholls_org_display_meta_item( '_nicholls_org_org_secretary_email' ); ?>
-
+					
 				</div>
 
 			</div>
