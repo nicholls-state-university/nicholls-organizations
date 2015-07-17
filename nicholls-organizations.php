@@ -675,7 +675,7 @@ function nicholls_org_gf_create_org( $entry, $form ){
 	$new_org = array(
 		'post_title' => sanitize_text_field( $entry[1] ),
 		'post_content' => sanitize_text_field( $entry[3] ),
-		'post_status' => 'publish',
+		'post_status' => 'pending',
 		'post_date' => date('Y-m-d H:i:s'),
 		'post_type' => 'n-organizations',
 		'ping_status' => 'closed', // Deactivate pings
