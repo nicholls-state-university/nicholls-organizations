@@ -600,17 +600,14 @@ add_action("gform_after_submission", "nicholls_org_gf_create_org", 10, 2);
 *
 *
 --- Notes for entry creation ---
-
-(
-(
-    [id] => 4
+    [id] => 10
     [form_id] => 3
-    [date_created] => 2015-03-31 20:19:27
+    [date_created] => 2015-07-17 19:28:59
     [is_starred] => 0
     [is_read] => 0
     [ip] => 10.60.11.166
-    [source_url] => http://web2.nicholls.edu/organizations/2015/03/18/test-post-org-info/
-    [post_id] => 
+    [source_url] => http://web2.nicholls.edu/organizations/2015/07/17/form-test/
+    [post_id] => 832
     [currency] => USD
     [payment_status] => 
     [payment_date] => 
@@ -620,36 +617,36 @@ add_action("gform_after_submission", "nicholls_org_gf_create_org", 10, 2);
     [is_fulfilled] => 
     [created_by] => 1
     [transaction_type] => 
-    [user_agent] => Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:36.0) Gecko/20100101 Firefox/36.0
+    [user_agent] => Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:39.0) Gecko/20100101 Firefox/39.0
     [status] => active
-    [1] => Organization Name
-    [2] => nickname
-    [3] => Descriiption of stuff.
-    [4] => 1115
-    [24.3] => Advisor Name
-    [24.6] => Advisor Last Name
-    [20] => adv@here.com
-    [21] => (985)226-0001
-    [8] => adv office room/building
-    [30.3] => Avisor 2 name
-    [30.6] => Advisor 2 name last
-    [12] => coAdvisor@email.com
-    [34] => (985)226-0002
-    [25.3] => PRESIDENT
-    [25.6] => PRES LAST
-    [22] => PRES@HERE.COM
-    [23] => (985)226-0003
-    [26.3] => VICE PRES
-    [26.6] => VICE PRES LAST
-    [31] => VP@HERE.COM
-    [27.3] => TREAS
-    [27.6] => TREAS LAST
-    [32] => TREAS@HERE.COM
-    [28.3] => SEC NAME
-    [28.6] => SEC LAST
-    [33] => SEC@H34.COM
-)
-
+    [1] => Jess's Club
+    [3] => This a test!!!
+    [4] => 8
+    [24.3] => Jess
+    [24.6] => Planck
+    [20] => jess@funroe.net
+    [21] => (985)226-3538
+    [8] => Elkins 132
+    [25.3] => Jess
+    [25.6] => Planck
+    [22] => jess@funroe.net
+    [23] => (985)226-3538
+    [27.3] => Jess
+    [27.6] => Planck
+    [35] => http://web2.nicholls.edu/organizations/files/gravity_forms/3-60a8f88581c9ae6f3805251f3a0c1286/2015/07/mardi11.jpg|:||:||:||:|833
+    [36] => a:2:{i:0;a:3:{s:4:"Name";s:10:"Jesse Uggg";s:5:"Email";s:9:"jp@me.com";s:5:"Phone";s:9:"no number";}i:1;a:3:{s:4:"Name";s:3:"bob";s:5:"Email";s:10:"bob@me.com";s:5:"Phone";s:4:"gggg";}}
+    [2] => 
+    [30.3] => 
+    [30.6] => 
+    [12] => 
+    [34] => 
+    [26.3] => 
+    [26.6] => 
+    [31] => 
+    [32] => 
+    [28.3] => 
+    [28.6] => 
+    [33] => 
 */
 function nicholls_org_gf_create_org( $entry, $form ){
 	//First need to create the post in its basic form
@@ -657,7 +654,7 @@ function nicholls_org_gf_create_org( $entry, $form ){
 	// Only privilged users, otherwise form sends email.
 	if ( !current_user_can( 'publish_posts' ) ) return;
 	
-	/*
+
 	echo '<br />--- Entry ----<br />';
 	print_r( $entry );
 
@@ -670,13 +667,13 @@ function nicholls_org_gf_create_org( $entry, $form ){
 	
 	// Return first argument.
 	return $entry;
-	*/
+
 	
 	$new_org = array(
 		'post_title' => sanitize_text_field( $entry[1] ),
 		'post_content' => sanitize_text_field( $entry[3] ),
 		'post_status' => 'pending',
-		'post_date' => date('Y-m-d H:i:s'),
+//		'post_date' => date('Y-m-d H:i:s'),
 		'post_type' => 'n-organizations',
 		'ping_status' => 'closed', // Deactivate pings
 		'comment_status' => 'closed', // Deactivate comments
