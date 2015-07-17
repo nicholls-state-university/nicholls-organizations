@@ -43,6 +43,17 @@ get_header();
 					<?php nicholls_org_display_meta_item( '_nicholls_org_co_advisor_name' ); ?>
 					<?php nicholls_org_display_meta_item( '_nicholls_org_co_advisor_email' ); ?>
 					<?php nicholls_org_display_meta_item( '_nicholls_org_co_advisor_phone' ); ?>
+					
+					<h1>Members</h1>
+
+<?php
+
+					$the_post_id = get_the_ID();
+					$meta_item_data = get_post_meta( $the_post_id, '_nicholls_org_group_members', true );
+					
+					print_r( $meta_item_data );
+?>
+					
 			</div>
 
 <?php 

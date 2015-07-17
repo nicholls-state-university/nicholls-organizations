@@ -666,8 +666,24 @@ function nicholls_org_gf_create_org( $entry, $form ){
 	print_r( $org_logo );
 
 	echo '<br />--- Members ----<br />';	
+	// Add members, reserialized.
 	$org_members = maybe_unserialize( $entry[36] );
-	print_r( $org_members );
+	$org_members_final = array();
+	
+	foreach( $entry[36] as $org_member ) {
+
+		// Note array keys built in CMB2
+		$org_members_data = array(
+			'member_name' => $org_member[0],
+			'member_email' => $org_member[1],
+			'member_phone' => $org_member[2]
+		);
+		
+		array_push( $org_members_final, $org_members_data );
+		
+	}
+	print_r( $org_members_final );
+
 	
 	// Return first argument.
 	return $entry;
@@ -677,7 +693,7 @@ function nicholls_org_gf_create_org( $entry, $form ){
 		'post_title' => sanitize_text_field( $entry[1] ),
 		'post_content' => sanitize_text_field( $entry[3] ),
 		'post_status' => 'pending',
-//		'post_date' => date('Y-m-d H:i:s'),
+		//'post_date' => date('Y-m-d H:i:s'),
 		'post_type' => 'n-organizations',
 		'ping_status' => 'closed', // Deactivate pings
 		'comment_status' => 'closed', // Deactivate comments
@@ -731,12 +747,24 @@ function nicholls_org_gf_create_org( $entry, $form ){
 	update_post_meta( $the_id, $prefix . 'primary_contact_name', sanitize_text_field( $entry['28'] ) );
 	
 	// Add members, reserialized.
-	$org_members = maybe_unserialize( $entry[36] );	
-	update_post_meta( $the_id, $prefix . 'group_members', $org_members ) );
+	$org_members = maybe_unserialize( $entry[36] );
+	$org_members_final = array();
 	
-	
-	
+	foreach( $entry[36] as $org_member ) {
 
+		// Note array keys built in CMB2
+		$org_members_data = array(
+			'member_name' => $org_member[0],
+			'member_email' => $org_member[1],
+			'member_phone' => $org_member[2]
+		);
+		
+		array_push( $org_members_final, $org_members_data );
+		
+	}
+	
+	update_post_meta( $the_id, $prefix . 'group_members', $org_members_final );
+	
 	/* Handle images 
 	$thePhotos = json_decode($entry[5]);
 	$firstPhoto = true;
