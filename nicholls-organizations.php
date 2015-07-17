@@ -654,7 +654,7 @@ function nicholls_org_gf_create_org( $entry, $form ){
 	// Only privilged users, otherwise form sends email.
 	if ( !current_user_can( 'publish_posts' ) ) return;
 	
-
+/*
 	echo '<br />--- Entry ----<br />';
 	print_r( $entry );
 
@@ -667,27 +667,26 @@ function nicholls_org_gf_create_org( $entry, $form ){
 
 	echo '<br />--- Members ----<br />';	
 	// Add members, reserialized.
-	$org_members = maybe_unserialize( $entry[36] );
+	$org_members = maybe_unserialize( $entry['36'] );
 	$org_members_final = array();
 	
-	foreach( $entry[36] as $org_member ) {
+	foreach( $org_members as $org_member ) {
 
-		// Note array keys built in CMB2
+		// Note array keys built in CMB2 on left VS keys from Gravity Forms on right
 		$org_members_data = array(
-			'member_name' => $org_member[0],
-			'member_email' => $org_member[1],
-			'member_phone' => $org_member[2]
+			'member_name' => $org_member['Name'],
+			'member_email' => $org_member['Email'],
+			'member_phone' => $org_member['Phone']
 		);
 		
 		array_push( $org_members_final, $org_members_data );
 		
 	}
 	print_r( $org_members_final );
-
 	
 	// Return first argument.
 	return $entry;
-
+*/
 	
 	$new_org = array(
 		'post_title' => sanitize_text_field( $entry[1] ),
@@ -747,16 +746,16 @@ function nicholls_org_gf_create_org( $entry, $form ){
 	update_post_meta( $the_id, $prefix . 'primary_contact_name', sanitize_text_field( $entry['28'] ) );
 	
 	// Add members, reserialized.
-	$org_members = maybe_unserialize( $entry[36] );
+	$org_members = maybe_unserialize( $entry['36'] );
 	$org_members_final = array();
 	
-	foreach( $entry[36] as $org_member ) {
+	foreach( $org_members as $org_member ) {
 
-		// Note array keys built in CMB2
+		// Note array keys built in CMB2 on left VS keys from Gravity Forms on right
 		$org_members_data = array(
-			'member_name' => $org_member[0],
-			'member_email' => $org_member[1],
-			'member_phone' => $org_member[2]
+			'member_name' => $org_member['Name'],
+			'member_email' => $org_member['Email'],
+			'member_phone' => $org_member['Phone']
 		);
 		
 		array_push( $org_members_final, $org_members_data );
