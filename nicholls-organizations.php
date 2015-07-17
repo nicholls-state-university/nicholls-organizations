@@ -664,6 +664,10 @@ function nicholls_org_gf_create_org( $entry, $form ){
 	echo '<br />--- Logo ----<br />';	
 	$org_logo = explode( '|', $entry['35'] );
 	print_r( $org_logo );
+
+	echo '<br />--- Members ----<br />';	
+	$org_members = maybe_unserialize( $entry[36] );
+	print_r( $org_members );
 	
 	// Return first argument.
 	return $entry;
