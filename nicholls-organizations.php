@@ -333,11 +333,11 @@ function nicholls_org_populate_org_list($form){
 	return $form;	
 }
 
+add_filter( 'gform_field_validation', 'nicholls_org_org_type_validation', 10, 4 );
 /**
 * Custom Gravity Forms validation for organization type custom taxonomy 
 *
 */
-add_filter( 'gform_field_validation', 'nicholls_org_org_type_validation', 10, 4 );
 function nicholls_org_org_type_validation( $result, $value, $form, $field ) {
 
     if ( $result['is_valid'] && $field['label'] == 'Organization Type' ) {
