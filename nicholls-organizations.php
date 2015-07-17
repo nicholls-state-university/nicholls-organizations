@@ -282,12 +282,12 @@ function nicholls_org_template_archive( $archive_template ) {
 }
 
 
+add_filter('gform_pre_render', 'nicholls_org_populate_org_list');
 /**
  * Prerender Organization dropdown list in Gravity Forms.
  * Form fields must be configured in Gravity Forms with a CSS class populate-orgs.
  * 
  */
-add_filter('gform_pre_render', 'nicholls_org_populate_org_list');
 function nicholls_org_populate_org_list($form){
 
 	// ISSUE:: All forms can replace a dropdown with provider list using CSS class populate-provider
