@@ -539,7 +539,7 @@ function nicholls_org_metaboxes() {
 	 */	 
 	 
 	$cmb_org_info_group = $cmb_org_info->add_field( array(
-		'id'          => $prefix . 'repeat_group',
+		'id'          => $prefix . 'group_members',
 		'type'        => 'group',
 		'title'       => __( 'Organization Members', 'nicholls_org' ),
 		'description' => __( 'Input organization member information', 'nicholls_org' ),
@@ -729,6 +729,13 @@ function nicholls_org_gf_create_org( $entry, $form ){
 	update_post_meta( $the_id, $prefix . 'org_secretary_name', sanitize_text_field( $entry['28.3'] . ' ' . $entry['28.6'] ) );
 	update_post_meta( $the_id, $prefix . 'org_secretary_email', sanitize_text_field( $entry['33'] ) );
 	update_post_meta( $the_id, $prefix . 'primary_contact_name', sanitize_text_field( $entry['28'] ) );
+	
+	// Add members, reserialized.
+	$org_members = maybe_unserialize( $entry[36] );	
+	update_post_meta( $the_id, $prefix . 'group_members', $org_members ) );
+	
+	
+	
 
 	/* Handle images 
 	$thePhotos = json_decode($entry[5]);
