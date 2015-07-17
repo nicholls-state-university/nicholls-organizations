@@ -251,46 +251,6 @@ function nicholls_org_email_form() { ?>
 	</div>
 <?php } 
 
-//add_filter('template_redirect', 'nicholls_org_template_smart');
-/*
-* Filter the single entry and archive templates with our custom function
-*/
-function nicholls_org_template_smart(){
-
-    global $post;
-
-	$fs_template_dir = dirname(__FILE__);
-    $single_template_name = 'nicholls-org-template.php';
-    $archive_template_name = 'nicholls-org-archive-template.php';
-
-    if ( is_single() && 'n-organizations' == get_post_type() ) {
-
-        $template = locate_template( array( $single_template_name), true );
-        if( empty( $template ) ) {
-          include( $fs_template_dir . '/' . $single_template_name);
-          exit();
-        }
-
-    } else if ( is_archive() && 'n-organizations' == get_post_type() ) {
-
-        $template = locate_template( array( $archive_template_name ), true );
-        if(empty($template)) {
-          include( $fs_template_dir . '/' . $archive_template_name);
-          exit();
-        }
-
-    } else if ( is_tax( 'n-organizations' ) ) {
-
-        $template = locate_template( array( $archive_template_name ), true );
-        if(empty($template)) {
-          include( $fs_template_dir . '/' . $archive_template_name);
-          exit();
-        }
-            
-    }
-
-}
-
 add_filter( 'single_template', 'nicholls_org_template_single' ) ;
 /*
 * Filter the archive templates with our custom function
