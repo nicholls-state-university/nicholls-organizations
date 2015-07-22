@@ -32,27 +32,13 @@ get_header();
 					<?php nicholls_org_display_meta_item( '_nicholls_org_org_president_name' ); ?>
 					<?php nicholls_org_display_meta_item( '_nicholls_org_org_president_email' ); ?>
 					<?php nicholls_org_display_meta_item( '_nicholls_org_org_vice_president_name' ); ?>
+					<?php nicholls_org_display_meta_item( '_nicholls_org_org_vice_president_email' ); ?>
 					<?php nicholls_org_display_meta_item( '_nicholls_org_org_treasurer_name' ); ?>
 					<?php nicholls_org_display_meta_item( '_nicholls_org_org_secretary_name' ); ?>
 
 					<h4>Advisor Information</h4>
 					
-					<?php nicholls_org_display_meta_item( '_nicholls_org_advisor_email' ); ?>
-					<?php nicholls_org_display_meta_item( '_nicholls_org_advisor_phone' ); ?>
-					<?php nicholls_org_display_meta_item( '_nicholls_org_advisor_office' ); ?>
-					<?php nicholls_org_display_meta_item( '_nicholls_org_co_advisor_name' ); ?>
-					<?php nicholls_org_display_meta_item( '_nicholls_org_co_advisor_email' ); ?>
-					<?php nicholls_org_display_meta_item( '_nicholls_org_co_advisor_phone' ); ?>
-					
-					<h1>Members</h1>
-
-<?php
-
-					$the_post_id = get_the_ID();
-					$meta_item_data = get_post_meta( $the_post_id, '_nicholls_org_group_members', true );
-					
-					print_r( $meta_item_data );
-?>
+					<?php nicholls_org_display_meta_item( '_nicholls_org_advisor_name' ); ?>
 					
 			</div>
 
