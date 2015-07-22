@@ -58,7 +58,7 @@ function nicholls_org_init() {
         'hierarchical' => false,
         'has_archive' => true,
         'rewrite' => array( 
-			'slug' => 'organizations',
+			'slug' => 'directory',
 		),  
         'supports' => array('title', 'editor', 'thumbnail', 'revisions'),
         'register_meta_box_cb' => 'nicholls_org_add_metaboxes'
