@@ -379,7 +379,7 @@ function nicholls_org_metaboxes() {
 		'name'       => __( 'Organization Nickname', 'nicholls_org' ),
 		'desc'       => __( 'Nickname or acronym for the organization.', 'nicholls_org' ),
 		'id'         => $prefix . 'nickname',
-		'type'       => 'text',
+		'type'       => 'text'
 		// 'show_on_cb' => 'yourprefix_hide_if_no_cats', // function should return a bool value
 		// 'sanitization_cb' => 'my_custom_sanitization', // custom sanitization callback parameter
 		// 'escape_cb'       => 'my_custom_escaping',  // custom escaping callback parameter
@@ -387,6 +387,66 @@ function nicholls_org_metaboxes() {
 		// 'repeatable'      => true,
 	) );
 	
+	// Add field to metabox group
+	$cmb_org_info->add_field( array(
+		'name'       => __( 'Organization Website', 'nicholls_org' ),
+		'desc'       => __( 'Organization website URL address.', 'nicholls_org' ),
+		'id'         => $prefix . 'website',
+		'type'       => 'text_url'
+	) );
+
+	$cmb_org_info->add_field( array(
+		'name'    => __( 'Organization Logo Image', 'nicholls_org' ),
+		'desc'    => __( 'Upload an image to represent the organization.', 'nicholls_org' ),
+		'id'      => $prefix . 'logo_image',
+		'type'    => 'file',
+		// Optionally hide the text input for the url:
+		'options' => array(
+			'url' => false,
+		),
+	) );		
+	
+	/**
+	 * Repeatable Field Group
+	 */	 
+	 
+	$cmb_org_info_group = $cmb_org_info->add_field( array(
+		'id'          => $prefix . 'group_networks',
+		'type'        => 'group',
+		'name'       => __( 'Organization Social Networks', 'nicholls_org' ),
+		'description' => __( 'Input organization social media networks', 'nicholls_org' ),
+		'options'     => array(
+			'group_title'   => __( 'Network {#}', 'cmb' ), // since version 1.1.4, {#} gets replaced by row number
+			'add_button'    => __( 'Add Another Network', 'cmb' ),
+			'remove_button' => __( 'Remove Network', 'cmb' ),
+			'sortable'      => true, // beta
+		),
+	) );
+
+	$cmb_org_info->add_group_field( $cmb_org_info_group, array(
+		'name' => __( 'Network name', 'nicholls_org' ),
+		'description' => __( 'Network name', 'nicholls_org' ),
+		'id'   => 'network_name',
+		'type' => 'text',
+		// 'repeatable' => true, // Repeatable fields are supported w/in repeatable groups (for most types)
+	) );	 
+	 
+	$cmb_org_info->add_group_field( $cmb_org_info_group, array(
+		'name' => __( 'Network Account', 'nicholls_org' ),
+		'description' => __( 'Network URL address or account name', 'nicholls_org' ),
+		'id'   => 'network_account',
+		'type' => 'text_url',
+		// 'repeatable' => true, // Repeatable fields are supported w/in repeatable groups (for most types)
+	) );
+		
+	// Add field to metabox group
+	$cmb_org_info->add_field( array(
+		'name' => __( 'Organization Primary Contact Name', 'nicholls_org' ),
+		'desc' => __( 'Organization primary contact full name.', 'nicholls_org' ),
+		'id'   => $prefix . 'primary_contact_name',
+		'type' => 'text',
+	) );	
+		
 	// Add field to metabox group
 	$cmb_org_info->add_field( array(
 		'name'       => __( 'Advisor Name', 'nicholls_org' ),
@@ -515,33 +575,14 @@ function nicholls_org_metaboxes() {
 		'type' => 'text',
 	) );
 
-	// Add field to metabox group
-	$cmb_org_info->add_field( array(
-		'name' => __( 'Organization Primary Contact Name', 'nicholls_org' ),
-		'desc' => __( 'Organization primary contact full name.', 'nicholls_org' ),
-		'id'   => $prefix . 'primary_contact_name',
-		'type' => 'text',
-	) );
-
-	$cmb_org_info->add_field( array(
-		'name'    => __( 'Organization Logo Image', 'nicholls_org' ),
-		'desc'    => __( 'Upload an image to represent the organization.', 'nicholls_org' ),
-		'id'      => $prefix . 'logo_image',
-		'type'    => 'file',
-		// Optionally hide the text input for the url:
-		'options' => array(
-			'url' => false,
-		),
-	) );
-
 	/**
-	 * Repeatable Field Group
+	 * Repeatable Field Group - Members
 	 */	 
 	 
 	$cmb_org_info_group = $cmb_org_info->add_field( array(
 		'id'          => $prefix . 'group_members',
 		'type'        => 'group',
-		'title'       => __( 'Organization Members', 'nicholls_org' ),
+		'name'       => __( 'Organization Members', 'nicholls_org' ),
 		'description' => __( 'Input organization member information', 'nicholls_org' ),
 		'options'     => array(
 			'group_title'   => __( 'Member {#}', 'cmb' ), // since version 1.1.4, {#} gets replaced by row number
