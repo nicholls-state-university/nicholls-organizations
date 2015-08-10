@@ -438,6 +438,14 @@ function nicholls_org_metaboxes() {
 		'type' => 'text_url',
 		// 'repeatable' => true, // Repeatable fields are supported w/in repeatable groups (for most types)
 	) );
+	
+	// Add field to metabox group
+	$cmb_org_info->add_field( array(
+		'name' => __( 'Organization Informaiton', 'nicholls_org' ),
+		'desc' => __( 'Organization information, leadership, and members', 'nicholls_org' ),
+		'id'   => $prefix . 'org_title',
+		'type' => 'title',
+	) );
 		
 	// Add field to metabox group
 	$cmb_org_info->add_field( array(
@@ -695,7 +703,8 @@ function nicholls_org_gf_create_org( $entry, $form ){
 	// Only privilged users, otherwise form sends email.
 	if ( !current_user_can( 'publish_posts' ) ) return;
 	
-/*
+
+	/*
 	echo '<br />--- Entry ----<br />';
 	print_r( $entry );
 
@@ -724,10 +733,29 @@ function nicholls_org_gf_create_org( $entry, $form ){
 		
 	}
 	print_r( $org_members_final );
+
+	echo '<br />--- Networks ----<br />';	
+	// Add members, reserialized.
+	$org_networks = maybe_unserialize( $entry['37'] );
+	$org_networks_final = array();
+	
+	foreach( $org_networks as $org_network ) {
+
+		// Note array keys built in CMB2 on left VS keys from Gravity Forms on right
+		$org_networks_data = array(
+			'network_name' => $org_network['Social Media Network Name'],
+			'network_account' => $org_network['Account Name or URL']
+		);
+		
+		array_push( $org_members_final, $org_networks_data );
+		
+	}
+	print_r( $org_members_final );
 	
 	// Return first argument.
 	return $entry;
-*/
+	*/
+
 	
 	$new_org = array(
 		'post_title' => sanitize_text_field( $entry[1] ),
@@ -768,6 +796,7 @@ function nicholls_org_gf_create_org( $entry, $form ){
 	update_post_meta( $the_id, '_thumbnail_id', $org_logo_id);
 
 	update_post_meta( $the_id, $prefix . 'nickname', sanitize_text_field( $entry['2'] ) );
+	update_post_meta( $the_id, $prefix . 'website', sanitize_text_field( $entry['38'] ) );
 	update_post_meta( $the_id, $prefix . 'advisor_name', sanitize_text_field( $entry['24.3'] . ' ' . $entry['24.6'] ) );
 	update_post_meta( $the_id, $prefix . 'advisor_email', sanitize_text_field( $entry['20'] ) );
 	update_post_meta( $the_id, $prefix . 'advisor_phone', sanitize_text_field( $entry['21'] ) );
@@ -786,10 +815,26 @@ function nicholls_org_gf_create_org( $entry, $form ){
 	update_post_meta( $the_id, $prefix . 'org_secretary_email', sanitize_text_field( $entry['33'] ) );
 	update_post_meta( $the_id, $prefix . 'primary_contact_name', sanitize_text_field( $entry['28'] ) );
 	
+
+	// Add networks, reserialized.
+	$org_networks = maybe_unserialize( $entry['37'] );
+	$org_network_final = array();
+	foreach( $org_networks as $org_network ) {
+
+		// Note array keys built in CMB2 on left VS keys from Gravity Forms on right
+		$org_network_data = array(
+			'network_name' => $org_network['Social Media Network Name'],
+			'network_account' => $org_network['Account Name or URL']
+		);
+		
+		array_push( $org_network_final, $org_network_data );
+		
+	}
+	update_post_meta( $the_id, $prefix . 'group_networks', $org_network_final );
+
 	// Add members, reserialized.
 	$org_members = maybe_unserialize( $entry['36'] );
 	$org_members_final = array();
-	
 	foreach( $org_members as $org_member ) {
 
 		// Note array keys built in CMB2 on left VS keys from Gravity Forms on right
@@ -802,7 +847,6 @@ function nicholls_org_gf_create_org( $entry, $form ){
 		array_push( $org_members_final, $org_members_data );
 		
 	}
-	
 	update_post_meta( $the_id, $prefix . 'group_members', $org_members_final );
 	
 	/* Handle images 
